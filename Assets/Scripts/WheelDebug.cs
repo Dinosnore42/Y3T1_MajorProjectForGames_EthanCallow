@@ -27,7 +27,9 @@ public class WheelDebug : MonoBehaviour
         WheelDebugUI(bl, 0, -1);
         WheelDebugUI(br, 1, -1);
 
-        GUI.Label(new Rect(200, 100, 50, 50), ("Average RPM: " + thisCar.lastRPM.ToString()));
+        GUI.Label(new Rect(100, 90, 50, 50), ("Average RPM: " + thisCar.lastRPM.ToString()));
+        GUI.Label(new Rect(200, 90, 50, 50), ("Current Gear: " + thisCar.curGear.ToString()));
+        GUI.Label(new Rect(300, 90, 50, 50), ("Gear Ratio: " + thisCar.gearVal.ToString() + ":1"));
     }
 
     // Call this for each wheel in OnGUI, with x, y screen offsets

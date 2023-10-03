@@ -17,7 +17,10 @@ public class CarController : MonoBehaviour
     public List<AxleInfo> axleInfos; // the information about each individual axle
     public float maxMotorTorque; // maximum torque the motor can apply to wheel
     public float maxSteeringAngle; // maximum steer angle the wheel can have
-    public float lastRPM;
+    public float lastRPM; // last RPM of the car
+    public List<float> gears;
+    public int curGear = 1;
+    public float gearVal;
 
     // finds the corresponding visual wheel
     // correctly applies the transform
@@ -38,12 +41,28 @@ public class CarController : MonoBehaviour
         visualWheel.transform.rotation = rotation;
     }
 
+    public void Update()
+    {
+        //Change Gear
+        if (Input.GetKeyDown(KeyCode.UpArrow) && curGear < 5)
+        {
+            curGear++;
+            Debug.Log("Upshift");
+        }
+
+        if (Input.GetKeyDown(KeyCode.DownArrow) && curGear > 0)
+        {
+            curGear--;
+            Debug.Log("Downshift");
+        }
+    }
+
     // applies motion to the wheels
     public void FixedUpdate()
     {
         float stepper = 3.5f;
-
-        float motor = maxMotorTorque * Input.GetAxis("Vertical") * stepper; //multiply by current gear too
+        gearVal = gears[curGear];
+        float motor = maxMotorTorque * Input.GetAxis("Vertical") * stepper * gearVal;
         float steering = maxSteeringAngle * Input.GetAxis("Horizontal");
         float totalWheelRPM = 0f;
         int driveWheelNum = 0;
@@ -70,7 +89,7 @@ public class CarController : MonoBehaviour
         }
 
         float driveshaftRPM = totalWheelRPM / driveWheelNum;
-        lastRPM = driveshaftRPM * stepper; //multiply by current gear too
+        lastRPM = driveshaftRPM * stepper * gearVal;
 
     }
 }
