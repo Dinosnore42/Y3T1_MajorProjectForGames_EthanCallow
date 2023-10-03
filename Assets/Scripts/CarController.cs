@@ -1,3 +1,4 @@
+using JetBrains.Annotations;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -16,6 +17,7 @@ public class CarController : MonoBehaviour
     public List<AxleInfo> axleInfos; // the information about each individual axle
     public float maxMotorTorque; // maximum torque the motor can apply to wheel
     public float maxSteeringAngle; // maximum steer angle the wheel can have
+    public float lastRPM;
 
     // finds the corresponding visual wheel
     // correctly applies the transform
@@ -36,10 +38,15 @@ public class CarController : MonoBehaviour
         visualWheel.transform.rotation = rotation;
     }
 
+    // applies motion to the wheels
     public void FixedUpdate()
     {
-        float motor = maxMotorTorque * Input.GetAxis("Vertical");
+        float stepper = 3.5f;
+
+        float motor = maxMotorTorque * Input.GetAxis("Vertical") * stepper; //multiply by current gear too
         float steering = maxSteeringAngle * Input.GetAxis("Horizontal");
+        float totalWheelRPM = 0f;
+        int driveWheelNum = 0;
 
         foreach (AxleInfo axleInfo in axleInfos)
         {
@@ -50,11 +57,20 @@ public class CarController : MonoBehaviour
             }
             if (axleInfo.motor)
             {
+                driveWheelNum += 2;
+
+                totalWheelRPM += axleInfo.leftWheel.rpm;
+                totalWheelRPM += axleInfo.rightWheel.rpm;
+
                 axleInfo.leftWheel.motorTorque = motor;
                 axleInfo.rightWheel.motorTorque = motor;
             }
             ApplyLocalPositionToVisuals(axleInfo.leftWheel);
             ApplyLocalPositionToVisuals(axleInfo.rightWheel);
         }
+
+        float driveshaftRPM = totalWheelRPM / driveWheelNum;
+        lastRPM = driveshaftRPM * stepper; //multiply by current gear too
+
     }
 }
