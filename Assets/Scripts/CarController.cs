@@ -21,6 +21,12 @@ public class CarController : MonoBehaviour
     public List<float> gears;
     public int curGear = 1;
     public float gearVal;
+    private Rigidbody rb;
+
+    private void Awake()
+    {
+        rb = GetComponent<Rigidbody>();
+    }
 
     // finds the corresponding visual wheel
     // correctly applies the transform
@@ -47,13 +53,10 @@ public class CarController : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.UpArrow) && curGear < 5)
         {
             curGear++;
-            Debug.Log("Upshift");
         }
-
-        if (Input.GetKeyDown(KeyCode.DownArrow) && curGear > 0)
+        if (Input.GetKeyDown(KeyCode.DownArrow) && curGear > 1)
         {
             curGear--;
-            Debug.Log("Downshift");
         }
     }
 
@@ -61,11 +64,36 @@ public class CarController : MonoBehaviour
     public void FixedUpdate()
     {
         float stepper = 3.5f;
-        gearVal = gears[curGear];
-        float motor = maxMotorTorque * Input.GetAxis("Vertical") * stepper * gearVal;
+        gearVal = gears[curGear]; //sets gear ratio to that of current gear value
+        float motor = 0;
         float steering = maxSteeringAngle * Input.GetAxis("Horizontal");
         float totalWheelRPM = 0f;
         int driveWheelNum = 0;
+        float forwardVelocity = Vector3.Dot(rb.velocity, transform.forward);
+        float braking = 0f;
+
+        // If input direction and velocity direction match
+        if ((forwardVelocity >= 0 && Input.GetAxis("Vertical") > 0) || (forwardVelocity <= 0 && Input.GetAxis("Vertical") < 0))
+        {
+            motor = maxMotorTorque * Input.GetAxis("Vertical") * stepper * gearVal;
+
+            if ((forwardVelocity <= 0 && Input.GetAxis("Vertical") < 0))
+            {
+                curGear = 1;
+                gearVal = gears[curGear];
+            }
+        }
+        // If input direction and velocity direction don't match
+        else if ((forwardVelocity >= 0 && Input.GetAxis("Vertical") < 0) || (forwardVelocity <= 0 && Input.GetAxis("Vertical") > 0))
+        {
+            braking = 1000;
+        }
+
+        //failsafe to prevet supercharging
+        if (Mathf.Abs(lastRPM) > 7000)
+        {
+            motor = 0;
+        }
 
         foreach (AxleInfo axleInfo in axleInfos)
         {
@@ -84,6 +112,10 @@ public class CarController : MonoBehaviour
                 axleInfo.leftWheel.motorTorque = motor;
                 axleInfo.rightWheel.motorTorque = motor;
             }
+
+            axleInfo.leftWheel.brakeTorque = braking;
+            axleInfo.rightWheel.brakeTorque = braking;
+
             ApplyLocalPositionToVisuals(axleInfo.leftWheel);
             ApplyLocalPositionToVisuals(axleInfo.rightWheel);
         }
