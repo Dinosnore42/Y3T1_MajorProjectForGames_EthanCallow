@@ -24,6 +24,8 @@ public class CarController : MonoBehaviour
     private Rigidbody rb;
     public float totalWheelRPM; // Total RPM of drive wheels
     public float freeWheelRPM; // Total RPM of non-driving wheels
+    public bool automaticGears = true;
+    public bool tractionControl = true;
 
     private void Awake()
     {
@@ -62,6 +64,32 @@ public class CarController : MonoBehaviour
         {
             curGear--;
         }
+
+        // Toggle automatic gears
+        if (Input.GetKeyDown("z"))
+        {
+            if (automaticGears == true)
+            {
+                automaticGears = false;
+            }
+            else
+            {
+                automaticGears = true;
+            }
+        }
+
+        // Toggle traction control
+        if (Input.GetKeyDown("x"))
+        {
+            if (tractionControl == true)
+            {
+                tractionControl = false;
+            }
+            else
+            {
+                tractionControl = true;
+            }
+        }
     }
 
     // Applies motion to the wheels
@@ -86,20 +114,47 @@ public class CarController : MonoBehaviour
             // ...Motor power becomes input intensity up to maximum motor torque * stepper motor * current gear's gear ratio
             motorPower = maxMotorTorque * Input.GetAxis("Vertical") * stepper * gearVal;
 
+            // Shifting gears automatically
+            float speed = rb.velocity.magnitude * 2.237f;
+
+            if (automaticGears == true)
+            {
+                if (0 < speed && speed < 10)
+                {
+                    curGear = 1;
+                }
+                else if (10 <= speed && speed < 25)
+                {
+                    curGear = 2;
+                }
+                else if (25 <= speed && speed < 40)
+                {
+                    curGear = 3;
+                }
+                else if (40 <= speed && speed < 60)
+                {
+                    curGear = 4;
+                }
+                else if (60 <= speed)
+                {
+                    curGear = 5;
+                }
+            }
+
             // If the car is reversing...
             if ((forwardVelocity <= 0 && Input.GetAxis("Vertical") < 0))
             {
                 // ...Set it into reverse gear
                 curGear = 0;
-                gearVal = gears[curGear];
             }
             // If the car is going forwards and is in reverse gear...
             else if (curGear == 0)
             {
                 // ...Set it into a forward gear
                 curGear = 1;
-                gearVal = gears[curGear];
             }
+
+            gearVal = gears[curGear];
         }
         // If input direction and velocity direction don't match...
         else if ((forwardVelocity >= 0 && Input.GetAxis("Vertical") < 0) || (forwardVelocity <= 0 && Input.GetAxis("Vertical") > 0))
@@ -114,32 +169,6 @@ public class CarController : MonoBehaviour
             motorPower = 0;
         }
 
-        // Shifting gears automatically
-        float speed = rb.velocity.magnitude * 2.237f;
-
-        if (0 < speed && speed < 10)
-        {
-            curGear = 1;
-        }
-        else if (10 <= speed && speed < 25)
-        {
-            curGear = 2;
-        }
-        else if (25 <= speed && speed < 40)
-        {
-            curGear = 3;
-        }
-        else if (40 <= speed && speed < 60)
-        {
-            curGear = 4;
-        }
-        else if (60 <= speed)
-        {
-            curGear = 5;
-        }
-
-        gearVal = gears[curGear];
-
         // For each axle in the car...
         foreach (AxleInfo axleInfo in axleInfos)
         {
@@ -148,7 +177,7 @@ public class CarController : MonoBehaviour
             {
                 axleInfo.leftWheel.steerAngle = steering;
                 axleInfo.rightWheel.steerAngle = steering;
-
+                
                 freeWheelRPM += axleInfo.leftWheel.rpm;
                 freeWheelRPM += axleInfo.rightWheel.rpm;
             }
@@ -161,7 +190,7 @@ public class CarController : MonoBehaviour
                 totalWheelRPM += axleInfo.rightWheel.rpm;
 
                 // Traction control - (anti wheelspin)
-                if ((totalWheelRPM - freeWheelRPM) > 300)
+                if (tractionControl == true && ((totalWheelRPM / 2 - freeWheelRPM / 2) > 250 || (freeWheelRPM / 2 - totalWheelRPM / 2) > 250))
                 {
                     motorPower = 0;
                     braking = 10000; // Newton Meters
