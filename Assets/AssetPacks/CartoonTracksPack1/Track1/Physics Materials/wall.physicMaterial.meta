@@ -1,5 +1,9 @@
 fileFormatVersion: 2
+<<<<<<<< HEAD:Assets/AssetPacks/CartoonTracksPack1/Track1/Physics Materials/wall.physicMaterial.meta
 guid: 88ae8967ae5e1514abc111b523990106
+========
+guid: 7f35231755fa8124096e33e80144306f
+>>>>>>>> NewTrack:Assets/AssetPacks/CartoonTracksPack1/Track1/Physics Materials/Cone.physicMaterial.meta
 NativeFormatImporter:
   externalObjects: {}
   mainObjectFileID: 13400000
