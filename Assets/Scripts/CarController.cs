@@ -8,28 +8,32 @@ public class AxleInfo
 {
     public WheelCollider leftWheel;
     public WheelCollider rightWheel;
-    public bool motor; // is this wheel attached to motor?
-    public bool steering; // does this wheel apply steer angle?
+    public bool motor; // Is this wheel attached to motor?
+    public bool steering; // Does this wheel apply steer angle?
 }
 
 public class CarController : MonoBehaviour
 {
-    public List<AxleInfo> axleInfos; // the information about each individual axle
-    public float maxMotorTorque; // maximum torque the motor can apply to wheel
-    public float maxSteeringAngle; // maximum steer angle the wheel can have
-    public float lastRPM; // last RPM of the car
+    public List<AxleInfo> axleInfos; // The information about each individual axle
+    public float maxMotorTorque; // Maximum torque the motor can apply to wheel
+    public float maxSteeringAngle; // Maximum steer angle the wheel can have
+    public float engineRPM; // Last RPM of the car
     public List<float> gears;
     public int curGear = 1;
     public float gearVal;
     private Rigidbody rb;
+    public float autoShiftDelay = 0.5f;
+    public float upShiftTimer = 0f;
+    public float downShiftTimer = 0f;
+
 
     private void Awake()
     {
         rb = GetComponent<Rigidbody>();
     }
 
-    // finds the corresponding visual wheel
-    // correctly applies the transform
+    // Finds the corresponding visual wheel
+    // Correctly applies the transform
     public void ApplyLocalPositionToVisuals(WheelCollider collider)
     {
         if (collider.transform.childCount == 0)
@@ -49,59 +53,90 @@ public class CarController : MonoBehaviour
 
     public void Update()
     {
-        //Change Gear
+        // Gear shifts up
         if (Input.GetKeyDown(KeyCode.UpArrow) && curGear < 5)
         {
             curGear++;
         }
+
+        // Gear shifts down
         if (Input.GetKeyDown(KeyCode.DownArrow) && curGear > 1)
         {
             curGear--;
         }
+
+        // Timers for automatic shifting
+        upShiftTimer -= Time.deltaTime;
+        downShiftTimer -= Time.deltaTime;
+
     }
 
-    // applies motion to the wheels
+    // Applies motion to the wheels
     public void FixedUpdate()
     {
-        float stepper = 3.5f;
-        gearVal = gears[curGear]; //sets gear ratio to that of current gear value
-        float motor = 0;
-        float steering = maxSteeringAngle * Input.GetAxis("Horizontal");
-        float totalWheelRPM = 0f;
-        int driveWheelNum = 0;
-        float forwardVelocity = Vector3.Dot(rb.velocity, transform.forward);
+        float stepper = 2.5f; // Stepping up gear between gearbox and driveshaft
+        gearVal = gears[curGear]; // Sets gear ratio to that of current gear value
+        
+        float steering = maxSteeringAngle * Input.GetAxis("Horizontal"); // Input intensity of steering
+        int driveWheelNum = 0; // Number of drive wheels
+        float totalWheelRPM = 0f; // Total RPM of all wheels
+        float forwardVelocity = Vector3.Dot(rb.velocity, transform.forward); // The direction the car is driving in
+
+        float motorPower = 0;
         float braking = 0f;
 
-        // If input direction and velocity direction match
+        // If input direction and velocity direction match...
         if ((forwardVelocity >= 0 && Input.GetAxis("Vertical") > 0) || (forwardVelocity <= 0 && Input.GetAxis("Vertical") < 0))
         {
-            motor = maxMotorTorque * Input.GetAxis("Vertical") * stepper * gearVal;
+            // ...Motor power becomes input intensity up to maximum motor torque * stepper motor * current gear's gear ratio
+            motorPower = maxMotorTorque * Input.GetAxis("Vertical") * stepper * gearVal;
 
+            // If the car is reversing...
             if ((forwardVelocity <= 0 && Input.GetAxis("Vertical") < 0))
             {
+                // ...Set it into reverse gear
+                curGear = 0;
+                gearVal = gears[curGear];
+            }
+            // If the car is going forwards and is in reverse gear...
+            else if (curGear == 0)
+            {
+                // ...Set it into a forward gear
                 curGear = 1;
                 gearVal = gears[curGear];
             }
         }
-        // If input direction and velocity direction don't match
+        // If input direction and velocity direction don't match...
         else if ((forwardVelocity >= 0 && Input.GetAxis("Vertical") < 0) || (forwardVelocity <= 0 && Input.GetAxis("Vertical") > 0))
         {
+            // ...The car is braking
             braking = 1000;
         }
 
-        //failsafe to prevet supercharging
-        if (Mathf.Abs(lastRPM) > 7000)
+        // After a delay, automatically downshift. Car will correct if wrong.
+        if (curGear > 1 && downShiftTimer <= 0)
         {
-            motor = 0;
+            curGear--;
+            downShiftTimer = autoShiftDelay * 2;
         }
 
+        // When RPM goes high enough, shift up a gear
+        if (Mathf.Abs(engineRPM) > 5000 && curGear < 6 && upShiftTimer <= 0)
+        {
+            curGear++;
+            upShiftTimer = autoShiftDelay;
+        }        
+
+        // For each axle in the car...
         foreach (AxleInfo axleInfo in axleInfos)
         {
+            // If the wheel can steer, apply the steering angle
             if (axleInfo.steering)
             {
                 axleInfo.leftWheel.steerAngle = steering;
                 axleInfo.rightWheel.steerAngle = steering;
             }
+            // If the wheel can drive, apply the motor torque
             if (axleInfo.motor)
             {
                 driveWheelNum += 2;
@@ -109,10 +144,11 @@ public class CarController : MonoBehaviour
                 totalWheelRPM += axleInfo.leftWheel.rpm;
                 totalWheelRPM += axleInfo.rightWheel.rpm;
 
-                axleInfo.leftWheel.motorTorque = motor;
-                axleInfo.rightWheel.motorTorque = motor;
+                axleInfo.leftWheel.motorTorque = motorPower;
+                axleInfo.rightWheel.motorTorque = motorPower;
             }
 
+            // Apply braking torque
             axleInfo.leftWheel.brakeTorque = braking;
             axleInfo.rightWheel.brakeTorque = braking;
 
@@ -120,8 +156,8 @@ public class CarController : MonoBehaviour
             ApplyLocalPositionToVisuals(axleInfo.rightWheel);
         }
 
-        float driveshaftRPM = totalWheelRPM / driveWheelNum;
-        lastRPM = driveshaftRPM * stepper * gearVal;
+        float driveshaftRPM = totalWheelRPM / driveWheelNum; // driveshaft rpm = average wheel RPM
+        engineRPM = driveshaftRPM * stepper * gearVal; 
 
     }
 }

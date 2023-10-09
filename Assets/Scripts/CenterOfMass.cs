@@ -7,7 +7,7 @@ public class CenterOfMass : MonoBehaviour
     public GameObject car;
     public Rigidbody body;
 
-    //Center of mass alter
+    // Center of mass visual display
     void OnDrawGizmosSelected()
     {
         Gizmos.color = Color.blue;

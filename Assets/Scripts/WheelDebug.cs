@@ -18,16 +18,17 @@ public class WheelDebug : MonoBehaviour
 
     private void OnGUI()
     {
-        // nice box
+        // Background box
         GUI.Box(new Rect(80, 0, 300, 230), "");
 
-        //wheel data
+        // Wheel data
         WheelDebugUI(fl, 0, -2);
         WheelDebugUI(fr, 1, -2);
         WheelDebugUI(bl, 0, -1);
         WheelDebugUI(br, 1, -1);
 
-        GUI.Label(new Rect(100, 90, 50, 50), ("Average RPM: " + thisCar.lastRPM.ToString()));
+        // RPM and gear info
+        GUI.Label(new Rect(100, 90, 50, 50), ("Engine RPM: " + ((int)Mathf.Round(thisCar.engineRPM)).ToString()));
         GUI.Label(new Rect(200, 90, 50, 50), ("Current Gear: " + thisCar.curGear.ToString()));
         GUI.Label(new Rect(300, 90, 50, 50), ("Gear Ratio: " + thisCar.gearVal.ToString() + ":1"));
     }
@@ -37,7 +38,7 @@ public class WheelDebug : MonoBehaviour
     {
         wheel.GetGroundHit(out WheelHit hit);
         GUI.Label(new Rect(100 + 150 * x, 300 + 150 * y, 500, 500),
-        "RPM = " + wheel.rpm.ToString("0")
+        "RPM = " + ((int)Mathf.Round(wheel.rpm)).ToString("0")
         + "\nForward Slip ="
         + hit.forwardSlip.ToString("0.00")
         + "\nSide Slip ="
