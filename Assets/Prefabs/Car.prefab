@@ -512,7 +512,7 @@ WheelCollider:
     m_ExtremumSlip: 0.1
     m_ExtremumValue: 1
     m_AsymptoteSlip: 0.8
-    m_AsymptoteValue: 0.7
+    m_AsymptoteValue: 0.5
     m_Stiffness: 1
   m_IncludeLayers:
     serializedVersion: 2
@@ -801,7 +801,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4625715662483474405}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0.69545144, z: -0, w: 0.71857303}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 14.53, y: 1.42, z: -12.35}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -810,7 +810,7 @@ Transform:
   - {fileID: 6753003454172675611}
   - {fileID: 5100887362617877163}
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: -88.126, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!54 &490950153583410575
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -822,7 +822,7 @@ Rigidbody:
   m_Mass: 2000
   m_Drag: 0
   m_AngularDrag: 0.05
-  m_CenterOfMass: {x: 0, y: -0.5, z: -0.4}
+  m_CenterOfMass: {x: 0, y: -0.5, z: 0}
   m_InertiaTensor: {x: 1, y: 1, z: 1}
   m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
   m_IncludeLayers:
@@ -859,20 +859,21 @@ MonoBehaviour:
     rightWheel: {fileID: 6928135429481260244}
     motor: 1
     steering: 0
-  maxMotorTorque: 200
+  maxMotorTorque: 400
   maxSteeringAngle: 30
   engineRPM: 0
   gears:
   - 2
-  - 4
-  - 3
-  - 2
+  - 3.35
+  - 1.93
+  - 1.26
   - 1
-  - 0.8
+  - 0.68
   curGear: 1
   gearVal: 0
   autoShiftDelay: 1
-  shiftTimer: 0
+  upShiftTimer: 0
+  downShiftTimer: 0
 --- !u!114 &6232029065109228008
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1197,7 +1198,7 @@ WheelCollider:
     m_ExtremumSlip: 0.1
     m_ExtremumValue: 1
     m_AsymptoteSlip: 0.8
-    m_AsymptoteValue: 0.7
+    m_AsymptoteValue: 0.5
     m_Stiffness: 1
   m_IncludeLayers:
     serializedVersion: 2
@@ -1269,7 +1270,7 @@ WheelCollider:
     m_ExtremumSlip: 0.1
     m_ExtremumValue: 1
     m_AsymptoteSlip: 0.8
-    m_AsymptoteValue: 0.7
+    m_AsymptoteValue: 0.5
     m_Stiffness: 1
   m_IncludeLayers:
     serializedVersion: 2
@@ -1510,7 +1511,7 @@ WheelCollider:
     m_ExtremumSlip: 0.1
     m_ExtremumValue: 1
     m_AsymptoteSlip: 0.8
-    m_AsymptoteValue: 0.7
+    m_AsymptoteValue: 0.5
     m_Stiffness: 1
   m_IncludeLayers:
     serializedVersion: 2

@@ -74,7 +74,7 @@ public class CarController : MonoBehaviour
     // Applies motion to the wheels
     public void FixedUpdate()
     {
-        float stepper = 2.5f; // Stepping up gear between gearbox and driveshaft
+        float stepper = 2f; // Stepping up gear between gearbox and driveshaft
         gearVal = gears[curGear]; // Sets gear ratio to that of current gear value
         
         float steering = maxSteeringAngle * Input.GetAxis("Horizontal"); // Input intensity of steering
@@ -114,18 +114,19 @@ public class CarController : MonoBehaviour
         }
 
         // After a delay, automatically downshift. Car will correct if wrong.
-        if (curGear > 1 && downShiftTimer <= 0)
-        {
-            curGear--;
-            downShiftTimer = autoShiftDelay * 2;
-        }
+        //if (curGear > 1 && downShiftTimer <= 0)
+        //{
+        //    curGear--;
+        //    downShiftTimer = autoShiftDelay * 2;
+        //}
 
         // When RPM goes high enough, shift up a gear
-        if (Mathf.Abs(engineRPM) > 5000 && curGear < 6 && upShiftTimer <= 0)
+        if (Mathf.Abs(engineRPM) > 7000) //&& curGear < 6 && upShiftTimer <= 0
         {
-            curGear++;
-            upShiftTimer = autoShiftDelay;
-        }        
+            //curGear++;
+            //upShiftTimer = autoShiftDelay;
+            motorPower = 0;
+        }
 
         // For each axle in the car...
         foreach (AxleInfo axleInfo in axleInfos)
