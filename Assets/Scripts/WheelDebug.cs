@@ -34,6 +34,11 @@ public class WheelDebug : MonoBehaviour
         GUI.Label(new Rect(150, 90, 50, 50), ("Gear: " + thisCar.curGear.ToString()));
         GUI.Label(new Rect(210, 90, 50, 50), ("Gear Ratio: " + thisCar.gearVal.ToString() + ":1"));
         GUI.Label(new Rect(270, 90, 50, 50), ("Speed: " + ((int)Mathf.Round(thisRb.velocity.magnitude * 2.237f)).ToString() + "mph"));
+
+        if (thisCar.totalWheelRPM - thisCar.freeWheelRPM > 350)
+        {
+            GUI.Label(new Rect(150, 70, 200, 50), ("TRACTION CONTROL ON"));
+        }
     }
 
     // Call this for each wheel in OnGUI, with x, y screen offsets

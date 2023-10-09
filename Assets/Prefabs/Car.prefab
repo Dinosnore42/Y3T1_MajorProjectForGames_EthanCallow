@@ -500,7 +500,7 @@ WheelCollider:
     targetPosition: 0.5
   m_SuspensionDistance: 0.3
   m_ForceAppPointDistance: 0
-  m_Mass: 20
+  m_Mass: 35
   m_WheelDampingRate: 0.25
   m_ForwardFriction:
     m_ExtremumSlip: 0.2
@@ -850,6 +850,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 86e0126a33a0e464cad886c8d778385e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  fl: {fileID: 9099972295821310297}
+  fr: {fileID: 3280633221940086030}
+  bl: {fileID: 6756306600930871769}
+  br: {fileID: 6928135429481260244}
   axleInfos:
   - leftWheel: {fileID: 9099972295821310297}
     rightWheel: {fileID: 3280633221940086030}
@@ -860,7 +864,7 @@ MonoBehaviour:
     motor: 1
     steering: 0
   maxMotorTorque: 400
-  maxSteeringAngle: 30
+  maxSteeringAngle: 35
   engineRPM: 0
   gears:
   - 2
@@ -871,9 +875,6 @@ MonoBehaviour:
   - 0.68
   curGear: 1
   gearVal: 0
-  autoShiftDelay: 1
-  upShiftTimer: 0
-  downShiftTimer: 0
 --- !u!114 &6232029065109228008
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1186,7 +1187,7 @@ WheelCollider:
     targetPosition: 0.5
   m_SuspensionDistance: 0.3
   m_ForceAppPointDistance: 0
-  m_Mass: 20
+  m_Mass: 35
   m_WheelDampingRate: 0.25
   m_ForwardFriction:
     m_ExtremumSlip: 0.2
@@ -1258,7 +1259,7 @@ WheelCollider:
     targetPosition: 0.5
   m_SuspensionDistance: 0.3
   m_ForceAppPointDistance: 0
-  m_Mass: 20
+  m_Mass: 35
   m_WheelDampingRate: 0.25
   m_ForwardFriction:
     m_ExtremumSlip: 0.2
@@ -1499,7 +1500,7 @@ WheelCollider:
     targetPosition: 0.5
   m_SuspensionDistance: 0.3
   m_ForceAppPointDistance: 0
-  m_Mass: 20
+  m_Mass: 35
   m_WheelDampingRate: 0.25
   m_ForwardFriction:
     m_ExtremumSlip: 0.2
