@@ -8,19 +8,19 @@ public class AxleInfo
 {
     public WheelCollider leftWheel;
     public WheelCollider rightWheel;
-    public bool motor; // is this wheel attached to motor?
-    public bool steering; // does this wheel apply steer angle?
+    public bool motor; // Is this wheel attached to a motor?
+    public bool steering; // Does this wheel apply steer angle?
 }
 
 public class CarController : MonoBehaviour
 {
-    public List<AxleInfo> axleInfos; // the information about each individual axle
-    public float maxMotorTorque; // maximum torque the motor can apply to wheel
-    public float maxSteeringAngle; // maximum steer angle the wheel can have
-    public float lastRPM; // last RPM of the car
-    public List<float> gears;
-    public int curGear = 1;
-    public float gearVal;
+    public List<AxleInfo> axleInfos; // Information about each individual axle
+    public float maxMotorTorque; // Maximum torque the motor can apply to wheel
+    public float maxSteeringAngle; // Maximum steer angle the wheel can have
+    public float lastRPM; // The last RPM of the car, used by GUI script
+    public List<float> gears; // List of gear ratios
+    public int curGear = 1; // Current gear of the car (1-5)
+    public float gearVal; // Gear ratio of the current gear
     private Rigidbody rb;
 
     private void Awake()
@@ -28,8 +28,8 @@ public class CarController : MonoBehaviour
         rb = GetComponent<Rigidbody>();
     }
 
-    // finds the corresponding visual wheel
-    // correctly applies the transform
+    // Finds the corresponding visual wheel
+    // Correctly applies the transform to make the wheels turn and steer
     public void ApplyLocalPositionToVisuals(WheelCollider collider)
     {
         if (collider.transform.childCount == 0)
